@@ -29,6 +29,11 @@ class Game:
 
         self.score_label.config(text=self.score_data)
 
+    def reset_score(self):
+        self.score_data.x = 0
+        self.score_data.o = 0
+        self.score_label.config(text=self.score_data)
+
 
 def reset(game, winner):
     game.change_score(winner)
@@ -37,6 +42,11 @@ def reset(game, winner):
     game.pressed_buttons = []
     for button in game.buttons:
         button["text"] = ""
+
+
+def reset_everything(game):
+    reset(game, "")
+    game.reset_score()
 
 
 def all_equal(lst):
@@ -74,7 +84,7 @@ def create_buttons(game):
                        width=game.b_size_x,
                        height=game.b_size_y,
                        command=partial(change_txt, game, x + y * 3))
-            b.grid(column=x + 1, row=y + 2)
+            b.grid(column=x + 1, row=y + 1)
             game.buttons.append(b)
 
 
@@ -84,14 +94,31 @@ class Score:
     o = 0
 
     def __str__(self):
-        return f"X:{self.x}     O:{self.o}"
+        return f"X: {self.x}     O: {self.o}"
 
 
-s = Label(text="X:0     O:0", padx=50, pady=20, font=("", 14))
-s.grid(column=0, row=1)
+sc = Label(text="X: 0     O: 0", padx=50, pady=20, font=("", 14))
+sc.grid(column=0, row=0)
 
-g = Game(Score(), s)
+g = Game(Score(), sc)
 create_buttons(g)
+
+reset_button = Button(root,
+                      text="Reset",
+                      font=("", g.font_size),
+                      width=10,
+                      height=1,
+                      command=partial(reset_everything, g))
+reset_button.grid(column=4, row=0, padx=20, pady=20)
+
+exit_button = Button(root,
+                     text="Exit",
+                     font=("", g.font_size),
+                     width=10,
+                     height=1,
+                     command=root.destroy)
+exit_button.grid(column=4, row=5, padx=20, pady=20)
+
 
 # Show screen
 root.mainloop()
