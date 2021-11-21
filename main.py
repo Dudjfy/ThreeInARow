@@ -5,30 +5,34 @@ root = Tk()
 root.geometry("600x400")
 root.title("3 In A Row")
 
-# Label
-score = Label(text="Score: ", padx=60, pady=20, font=("", 14))
-score.grid(column=0, row=1)
-
-turn = 0
-
-
-# Functions
-
+# Functions and Classes
 class Game:
     win_combos = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
 
-    def __init__(self, b_size_x=6, b_size_y=3, font_size=14):
+    def __init__(self, score, label, b_size_x=6, b_size_y=3, font_size=14):
         self.b_size_x = b_size_x
         self.b_size_y = b_size_y
         self.font_size = font_size
 
         self.turn = 0
+        self.score_data = score
+        self.score_label = label
 
         self.buttons = []
         self.pressed_buttons = []
 
+    def change_score(self, winner):
+        if winner == "X":
+            self.score_data.x += 1
+        elif winner == "O":
+            self.score_data.o += 1
 
-def reset(game):
+        self.score_label.config(text=self.score_data)
+
+
+def reset(game, winner):
+    game.change_score(winner)
+
     game.turn = 0
     game.pressed_buttons = []
     for button in game.buttons:
@@ -36,14 +40,15 @@ def reset(game):
 
 
 def all_equal(lst):
-    return lst[0] in ["X", "O"] and len(set(lst)) == 1
+    return lst[0] in ["X", "O"] and len(set(lst)) == 1, lst[0]
 
 
 def test_for_win(game):
     for combo in game.win_combos:
-        if all_equal([game.buttons[i]["text"] for i in combo]):
-            return True
-    return False
+        full_row, winner = all_equal([game.buttons[i]["text"] for i in combo])
+        if full_row:
+            return full_row, winner
+    return False, ""
 
 
 def change_txt(game, i):
@@ -52,10 +57,9 @@ def change_txt(game, i):
         game.pressed_buttons.append(i)
         game.turn += 1
 
-        win = test_for_win(game)
-        print(win)
-        if win:
-            reset(game)
+        full_row, winner = test_for_win(game)
+        if full_row:
+            reset(game, winner)
 
 
 def try_i(game, i):
@@ -74,8 +78,20 @@ def create_buttons(game):
             game.buttons.append(b)
 
 
-game = Game()
-create_buttons(game)
+# Label
+class Score:
+    x = 0
+    o = 0
+
+    def __str__(self):
+        return f"X:{self.x}     O:{self.o}"
+
+
+s = Label(text="X:0     O:0", padx=50, pady=20, font=("", 14))
+s.grid(column=0, row=1)
+
+g = Game(Score(), s)
+create_buttons(g)
 
 # Show screen
 root.mainloop()
