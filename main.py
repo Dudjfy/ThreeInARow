@@ -4,6 +4,7 @@ from tkinter import *
 # Tkinter initialization
 root = Tk()
 root.geometry("600x400")
+# Title
 root.title("3 In A Row")
 
 
@@ -105,7 +106,7 @@ def create_buttons(game):
             game.buttons.append(b)
 
 
-# Labels
+# Labels, an example of using .grid()
 sc = Label(text="X: 0     O: 0", padx=35, pady=20, font=("", 14))
 sc.grid(column=0, row=0)
 
@@ -130,6 +131,7 @@ reset_score_button = Button(root,
                             command=g.reset_score)
 reset_score_button.grid(column=4, row=1, padx=30, pady=20)
 
+# Exit button
 exit_button = Button(root,
                      text="Exit",
                      font=("", g.font_size),
